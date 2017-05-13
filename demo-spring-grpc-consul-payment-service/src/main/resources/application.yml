@@ -1,0 +1,10 @@
+grpc:
+  server:
+    port: 8586
+    consul:
+      register: true
+      tags: [payment]
+      service-name: payment-service
+      fail-fast: false
+      retry:
+        interval: 2

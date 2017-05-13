@@ -1,0 +1,5 @@
+grpc:
+  client:
+    consul:
+      host: localhost
+      port: 8500

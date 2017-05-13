@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.emt</groupId>
+    <artifactId>spring-grpc-starter</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>Spring Grpc Starter</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <modules>
+        <module>demo-spring-grpc-consul-client</module>
+        <module>demo-spring-grpc-consul-customer-service</module>
+        <module>demo-spring-grpc-consul-payment-service</module>
+        <module>demo-spring-grpc-simple-client</module>
+        <module>demo-spring-grpc-simple-server</module>
+
+        <module>spring-grpc-client-starter</module>
+        <module>spring-grpc-client-consul-starter</module>
+
+        <module>spring-grpc-server-starter</module>
+        <module>spring-grpc-server-consul-starter</module>
+
+    </modules>
+
+
+</project>

@@ -1,0 +1,10 @@
+grpc:
+  server:
+    port: 8585
+    consul:
+      register: true
+      tags: [customer]
+      service-name: customer-service
+      fail-fast: false
+      retry:
+        interval: 2
