@@ -3,6 +3,8 @@ package com.emt.grpc.spring;
 import com.emt.grpc.consul.AbstractConsulClientBuilder;
 import com.emt.grpc.consul.ConsulConfiguration;
 import com.emt.grpc.consul.DefaultConsulClientBuilder;
+import com.emt.grpc.consul.HealthGrpcCheckService;
+import com.emt.grpc.health.HealthCheckService;
 import com.emt.grpc.server.AbstractGrpcServerBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,4 +33,13 @@ public class GrpcServerConsulAutoConfiguration {
   }
 
 
+  @Bean
+  public HealthGrpcCheckService healthGrpcCheckService() {
+    return new HealthGrpcCheckService();
+  }
+
+  @Bean
+  public HealthCheckService healthCheckService() {
+    return new HealthCheckService();
+  }
 }

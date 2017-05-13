@@ -3,6 +3,7 @@ package com.example;
 import com.emt.grpc.utils.ChannelBuilder;
 import com.emt.grpc.client.AbstractManagedChannelBuilder;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.util.RoundRobinLoadBalancerFactory;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -21,6 +22,7 @@ public class ConfigureManagedChannelBuilder extends AbstractManagedChannelBuilde
             .and()
             .newChannelBuilder().withChannelId("customer")
             .forTarget("consul://customer-service", ManagedChannelBuilder.class)
+            .loadBalancerFactory(RoundRobinLoadBalancerFactory.getInstance())
             .usePlaintext(true);
 
 

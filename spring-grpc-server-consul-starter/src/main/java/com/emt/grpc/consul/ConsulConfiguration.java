@@ -2,6 +2,8 @@ package com.emt.grpc.consul;
 
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.agent.model.NewService;
+import com.emt.grpc.health.HealthCheckService;
+import com.emt.grpc.health.HealthServiceScheduler;
 import com.emt.grpc.server.AbstractGrpcServerBuilder;
 import com.emt.grpc.spring.GrpcServerConsulProperties;
 import com.emt.grpc.spring.GrpcServerProperties;
@@ -9,6 +11,10 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 
@@ -31,11 +37,17 @@ public class ConsulConfiguration implements InitializingBean, DisposableBean, Ru
   @Autowired
   private GrpcServerProperties grpcServerProperties;
 
+  @Autowired
+  private HealthCheckService healthService;
+
   private ConsulClient consulClient;
 
   private Thread thread;
 
   private NewServiceHolder newServiceHolder;
+
+  private ScheduledExecutorService scheduledExecutorService;
+  private HealthServiceScheduler healthSchedulerInstance;
 
   private volatile boolean isDestroyed = false;
 
@@ -53,6 +65,10 @@ public class ConsulConfiguration implements InitializingBean, DisposableBean, Ru
     this.thread.interrupt();
     if (this.consulClient != null && this.newServiceHolder != null) {
       this.consulClient.agentServiceDeregister(newServiceHolder.getServiceInstanceId());
+    }
+    if (this.scheduledExecutorService != null && this.healthSchedulerInstance != null) {
+      this.scheduledExecutorService.shutdown();
+      this.healthSchedulerInstance.destroy();
     }
   }
 
@@ -76,7 +92,7 @@ public class ConsulConfiguration implements InitializingBean, DisposableBean, Ru
 
       try {
         if (!this.grpcServerConsulProperties.isFailFast() && this.tryToReconnect()) {
-          logger.info(String.format("Consul connection ok to --- Host:%s , Port:%s"));
+          logger.info(String.format("Consul connection ok to --- Host:%s , Port:%s", grpcServerConsulProperties.getHost(), grpcServerConsulProperties.getPort()));
           return true;
         }
       } catch (InterruptedException e1) {
@@ -113,6 +129,10 @@ public class ConsulConfiguration implements InitializingBean, DisposableBean, Ru
     if (this.checkConsulActiveStatus() && this.checkConsulConnection()) {
       NewService newService = this.buildService();
       this.consulClient.agentServiceRegister(newService, this.grpcServerConsulProperties.getToken());
+      this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+      this.healthSchedulerInstance = new HealthServiceScheduler(newService, this.consulClient, this.healthService);
+      this.scheduledExecutorService.scheduleWithFixedDelay(healthSchedulerInstance,
+              5, 30, TimeUnit.SECONDS);
     }
   }
 
@@ -123,6 +143,10 @@ public class ConsulConfiguration implements InitializingBean, DisposableBean, Ru
     newService.setName(this.newServiceHolder.getServiceName());
     newService.setTags(this.newServiceHolder.getTags());
     newService.setId(this.newServiceHolder.getServiceInstanceId());
+
+    NewService.Check check = new NewService.Check();
+    check.setTtl("60s");
+    newService.setCheck(check);
     return newService;
   }
 

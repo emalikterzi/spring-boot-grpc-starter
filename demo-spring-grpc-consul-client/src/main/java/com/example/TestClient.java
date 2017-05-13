@@ -28,12 +28,12 @@ public class TestClient implements InitializingBean {
             = customerServiceBlockingStub.customerInfo(CustomerRequest.getDefaultInstance()
             .newBuilderForType().setId(1).build());
 
-
     PaymentGrpc.PaymentBlockingStub paymentBlockingStub
             = PaymentGrpc.newBlockingStub(paymentService);
 
     PaymentResponse paymentResponse
             = paymentBlockingStub.paymentInfo(PaymentRequest.getDefaultInstance()
             .newBuilderForType().setId(1).build());
+
   }
 }

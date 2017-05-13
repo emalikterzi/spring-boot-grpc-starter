@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by emt on 10.05.2017.
@@ -23,10 +24,10 @@ public class GrpcServerConsulProperties implements InitializingBean {
   private String serviceId;
   private String instanceId;
 
-  private String interval = "10s";
   private String token;
 
   private List<String> tags;
+
 
   public String getInstanceId() {
     return instanceId;
@@ -44,13 +45,6 @@ public class GrpcServerConsulProperties implements InitializingBean {
     this.token = token;
   }
 
-  public String getInterval() {
-    return interval;
-  }
-
-  public void setInterval(String interval) {
-    this.interval = interval;
-  }
 
   public List<String> getTags() {
     return tags;
@@ -126,7 +120,7 @@ public class GrpcServerConsulProperties implements InitializingBean {
   }
 
   public String serviceInstanceId() {
-    return this.instanceId == null ? this.serviceName + UUID.randomUUID().toString() : this.instanceId;
+    return this.instanceId == null ? this.serviceName + ":" + UUID.randomUUID().toString() : this.instanceId;
   }
 
   @Override

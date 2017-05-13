@@ -8,3 +8,5 @@ grpc:
       fail-fast: false
       retry:
         interval: 2
+server:
+  port: 8081
